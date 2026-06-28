@@ -10,6 +10,11 @@ npm install
 npm run dev
 ```
 
+### Запуск Storybook
+```bash
+npm run storybook
+```
+
 ---
 
 ## Технологии
