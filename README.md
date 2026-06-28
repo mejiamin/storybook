@@ -58,36 +58,12 @@ Storybook использует формат **Component Story Format (CSF)**. Э
 
 Сначала давай удалим примеры, которые сгенерировал Storybook, чтобы они не засоряли проект.
 
-* Смело удаляй всю папку **`src/stories`**.
+* Смело удаляй всю папку **`src/stories`** (удалено).
 * Сразу после этого твой сайдбар в Storybook опустеет — это нормально. Мы сейчас создадим свою папку для компонентов.
 
 ### Шаг 2: Создание компонента
 
 Давай создадим простую кнопку с использованием TypeScript и CSS Modules.
-
-Создай папку `src/components/Button/` и добавь туда два файла: `Button.tsx` и `Button.module.css`.
-
-**`src/components/Button/Button.module.css`**
-
-```css
-.btn {
-  padding: 10px 20px;
-  border-radius: 6px;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.btn:hover {
-  opacity: 0.8;
-}
-
-.primary {
-  background-color: #3b82f6;
-  color: white;
-}
-```
 
 **`src/components/Button/Button.tsx`**
 
@@ -114,7 +90,7 @@ export const Button = ({ label, variant = 'primary' }: ButtonProps) => {
 
 Файлы историй должны лежать рядом с компонентом и иметь расширение `.stories.tsx`. Storybook автоматически найдет их благодаря настройкам в `.storybook/main.ts`.
 
-Создай файл **`src/components/Button/Button.stories.tsx`**:
+**`src/components/Button/Button.stories.tsx`**:
 
 ```tsx
 import type { Meta, StoryObj } from '@storybook/react';
