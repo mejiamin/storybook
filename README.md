@@ -110,3 +110,92 @@ export const Primary: Story = {
 3. **В файле `Button.stories.tsx**`:
 * Добавь `size` в `argTypes` и сделай для него `control: 'select'`, чтобы в Storybook появился выпадающий список.
 * Создай под `Primary` еще две новые истории: `Secondary` (кнопка с `variant: 'secondary'`) и `Large` (кнопка с `size: 'large'`).
+
+---
+
+### 🛠 Как это должно выглядеть
+
+**1. `src/components/Button/Button.tsx`**
+Мы добавляем новый пропс `size` в интерфейс и прокидываем его в строку классов.
+
+```tsx
+import styles from './Button.module.css';
+
+interface ButtonProps {
+  label: string;
+  variant?: 'primary' | 'secondary';
+  /** Размер кнопки */
+  size?: 'small' | 'large';
+}
+
+export const Button = ({ 
+  label, variant = 'primary', size 
+}: ButtonProps) => {
+  // Формируем итоговый класс. Если size не передан,
+  // он просто не добавится.
+  const sizeClass = size ? styles[size] : '';
+  
+  return (
+    <button className={`
+      ${styles.btn} ${styles[variant]} ${sizeClass}
+    `}>
+      {label}
+    </button>
+  );
+};
+```
+
+**2. `src/components/Button/Button.stories.tsx`**
+Мы расширяем `argTypes` и добавляем две новые истории с использованием `StoryObj`.
+
+```tsx
+import type { Meta, StoryObj } from '@storybook/react';
+import { Button } from './Button';
+
+const meta: Meta<typeof Button> = {
+  title: 'UI/Button',
+  component: Button,
+  tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: 'radio',
+      options: ['primary', 'secondary'],
+    },
+    // Добавляем выпадающий список для размера
+    size: {
+      control: 'select',
+      options: ['small', 'large'],
+    },
+    label: {
+      control: 'text',
+    },
+  },
+};
+
+export default meta;
+type Story = StoryObj<typeof Button>;
+
+export const Primary: Story = {
+  args: {
+    label: 'Главная кнопка',
+    variant: 'primary',
+  },
+};
+
+// Новая история для Secondary
+export const Secondary: Story = {
+  args: {
+    label: 'Вторичная кнопка',
+    variant: 'secondary',
+  },
+};
+
+// Новая история для Large
+export const Large: Story = {
+  args: {
+    label: 'Большая кнопка',
+    variant: 'primary',
+    size: 'large',
+  },
+};
+```
