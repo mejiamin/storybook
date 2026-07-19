@@ -1,0 +1,33 @@
+.btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn:hover {
+  opacity: 0.8;
+}
+
+.primary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.secondary {
+  background-color: #e5e7eb;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.small {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.large {
+  padding: 14px 28px;
+  font-size: 18px;
+}

@@ -1,7 +1,9 @@
+import { Button } from "@/components"
+
 export const App = () => {
   return (
     <div>
-      App
+      <Button label="Главная кнопка" />
     </div>
   )
 }
