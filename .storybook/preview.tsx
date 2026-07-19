@@ -1,11 +1,20 @@
 import type { Preview } from '@storybook/react-vite'
+import '../src/assets/global.css'
 
 const preview: Preview = {
+  decorators: [
+    (Story) => (
+      <div className="global-theme-wrapper">
+        <Story />
+      </div>
+    )
+  ],
+  
   parameters: {
     controls: {
       matchers: {
-       color: /(background|color)$/i,
-       date: /Date$/i,
+        color: /(background|color)$/i,
+        date: /Date$/i,
       },
     },
 
