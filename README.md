@@ -40,9 +40,9 @@ npm run storybook
 
 2. **Урок 2: Написание первой истории (Story).** Создание изолированного компонента (например, UI-кнопки) и описание ее базового состояния с полной типизацией TypeScript.
 
-3. 👉 **Урок 3: Интерактивные пропсы (Args).** Настройка вкладки Controls. Мы сделаем так, чтобы текст, цвет и размер компонента можно было менять кликами прямо в браузере без изменения кода.
+3. **Урок 3: Интерактивные пропсы (Args).** Настройка вкладки Controls. Мы сделаем так, чтобы текст, цвет и размер компонента можно было менять кликами прямо в браузере без изменения кода.
 
-4. **Урок 4: CSS Modules в изоляции.** Подключение и настройка локальных классов (CSS Modules), чтобы стили компонентов корректно подгружались в песочнице Storybook.
+4. 👉 **Урок 4: CSS Modules в изоляции.** Подключение и настройка локальных классов (CSS Modules), чтобы стили компонентов корректно подгружались в песочнице Storybook.
 
 5. **Урок 5: Декораторы (Decorators).** Добавление глобальных оберток — например, центрирование компонентов на экране, добавление отступов или провайдеров тем.
 
@@ -50,152 +50,74 @@ npm run storybook
 
 ---
 
-## Урок 3: Интерактивные пропсы (Args).
+## Урок 4: CSS Modules и Глобальные стили в изоляции
 
-Переходим к самому интересному — магии панели **Controls** и автоматической документации.
+Ты уже заметил в предыдущем уроке, что наши стили из `Button.module.css` успешно применились к кнопке.
 
-В прошлом уроке мы передали стартовые данные через `args`. Storybook сам прочитал типы TypeScript и догадался, что `label` — это строка, создав для неё обычное текстовое поле. Но для сложных компонентов нам нужно явно управлять тем, как пользователь может с ними взаимодействовать.
+Почему это произошло автоматически? Потому что при установке (команда `init`) Storybook понял, что мы используем Vite, и подключил `@storybook/builder-vite`. Благодаря этому Storybook собирает компоненты **теми же самыми настройками**, что и само приложение. Ему не нужны дополнительные плагины для CSS Modules — всё работает из коробки.
 
-### Настройка argTypes и авто-документации
+Но здесь возникает другая проблема: **изоляция**.
 
-Давай расширим конфигурацию. Открой файл `Button.stories.tsx` и обнови блок `meta`:
+### Проблема глобальных стилей
 
-```tsx
-import type { Meta, StoryObj } from '@storybook/react';
-import { Button } from './Button';
+Storybook рендерит каждый компонент внутри изолированного `<iframe>`. Это значит, что он ничего не знает про стили, которые подключены в твоем главном `main.tsx` или `App.tsx`.
 
-const meta: Meta<typeof Button> = {
-  title: 'UI/Button',
-  component: Button,
-  // 1. Включаем автоматическую генерацию документации
-  tags: ['autodocs'], 
-  // 2. Настраиваем панель Controls
-  argTypes: {
-    variant: {
-      control: 'radio', // Превращаем в радио-кнопки
-      options: ['primary', 'secondary'],
-    },
-    label: {
-      control: 'text',
-    },
-  },
-};
+Если в твоем проекте есть файл `src/index.css` (где лежат сбросы стилей, глобальные переменные цветов или шрифты), в Storybook они не попадут. Твоя кнопка может выглядеть правильно по размерам, но с другим шрифтом или сломанными CSS-переменными.
 
-export default meta;
-type Story = StoryObj<typeof Button>;
+### Решение: Настройка preview.ts
 
-export const Primary: Story = {
-  args: {
-    label: 'Главная кнопка',
-    variant: 'primary',
-  },
-};
-```
+Чтобы передать глобальные стили в песочницу Storybook, нам нужен файл `.storybook/preview.ts`. Этот файл управляет тем, как рендерится холст (Canvas).
 
-### Что мы только что добавили?
+Давай сымитируем эту ситуацию.
 
-* **`tags: ['autodocs']`**: Обрати внимание на сайдбар в Storybook. У кнопки появилась вкладка **Docs**. Storybook автоматически сгенерировал полноценную страницу документации с таблицей пропсов. Описания для этой таблицы он берет прямо из комментариев `/ ... */`, которые мы оставили в интерфейсе `ButtonProps` в прошлом уроке.
-* **`argTypes`**: Мы жестко задали тип контрола для `variant`. Теперь во вкладке Controls появились удобные радио-кнопки. Ввести несуществующий вариант руками больше нельзя — типизация под надежной защитой.
+**1. Создай глобальные стили (создано!)**
+Представим, что у тебя в проекте есть файл `src/global.css` со шрифтом и переменными:
 
----
-
-## 📝 Практическое задание (на оценку)
-
-Теория работает лучше всего, когда сразу превращается в код. Давай проверим, как ты усвоил материал. За выполнение этого задания я выставлю тебе балл.
-
-**Твоя задача:**
-
-1. **В файле `Button.tsx**`: Добавь в интерфейс новый необязательный пропс `size?: 'small' | 'large'`. Примени этот класс к кнопке так же, как мы сделали с `variant`.
-2. **В файле `Button.module.css**`: Напиши стили для `.small` (меньший `padding` и шрифт) и `.large` (увеличенный `padding` и шрифт).
-3. **В файле `Button.stories.tsx**`:
-* Добавь `size` в `argTypes` и сделай для него `control: 'select'`, чтобы в Storybook появился выпадающий список.
-* Создай под `Primary` еще две новые истории: `Secondary` (кнопка с `variant: 'secondary'`) и `Large` (кнопка с `size: 'large'`).
-
----
-
-### 🛠 Как это должно выглядеть
-
-**1. `src/components/Button/Button.tsx`**
-Мы добавляем новый пропс `size` в интерфейс и прокидываем его в строку классов.
-
-```tsx
-import styles from './Button.module.css';
-
-interface ButtonProps {
-  label: string;
-  variant?: 'primary' | 'secondary';
-  /** Размер кнопки */
-  size?: 'small' | 'large';
+```css
+/* src/assets/global.css */
+:root {
+  --font-main: 'Arial', sans-serif;
+  --bg-color: #f3f4f6;
 }
 
-export const Button = ({ 
-  label, variant = 'primary', size 
-}: ButtonProps) => {
-  // Формируем итоговый класс. Если size не передан,
-  // он просто не добавится.
-  const sizeClass = size ? styles[size] : '';
-  
-  return (
-    <button className={`
-      ${styles.btn} ${styles[variant]} ${sizeClass}
-    `}>
-      {label}
-    </button>
-  );
-};
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-color);
+  margin: 0;
+  padding: 0;
+}
 ```
 
-**2. `src/components/Button/Button.stories.tsx`**
-Мы расширяем `argTypes` и добавляем две новые истории с использованием `StoryObj`.
+**2. Подключи их в Storybook**
+Открой файл `.storybook/preview.ts`. Добавь обычный импорт твоего глобального CSS-файла прямо в начале файла:
 
-```tsx
-import type { Meta, StoryObj } from '@storybook/react';
-import { Button } from './Button';
+```typescript
+// .storybook/preview.ts
+import type { Preview } from '@storybook/react';
+import '../src/assets/global.css'; // <-- Подключаем глобальные стили сюда!
 
-const meta: Meta<typeof Button> = {
-  title: 'UI/Button',
-  component: Button,
-  tags: ['autodocs'],
-  argTypes: {
-    variant: {
-      control: 'radio',
-      options: ['primary', 'secondary'],
-    },
-    // Добавляем выпадающий список для размера
-    size: {
-      control: 'select',
-      options: ['small', 'large'],
-    },
-    label: {
-      control: 'text',
+const preview: Preview = {
+  parameters: {
+    controls: {
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/i,
+      },
     },
   },
 };
 
-export default meta;
-type Story = StoryObj<typeof Button>;
-
-export const Primary: Story = {
-  args: {
-    label: 'Главная кнопка',
-    variant: 'primary',
-  },
-};
-
-// Новая история для Secondary
-export const Secondary: Story = {
-  args: {
-    label: 'Вторичная кнопка',
-    variant: 'secondary',
-  },
-};
-
-// Новая история для Large
-export const Large: Story = {
-  args: {
-    label: 'Большая кнопка',
-    variant: 'primary',
-    size: 'large',
-  },
-};
+export default preview;
 ```
+
+**3. Обнови кнопку (Опционально)**
+Теперь ты можешь безопасно использовать глобальные переменные внутри своих локальных CSS Modules. Например, в `Button.module.css` можно заменить жесткий цвет на переменную:
+
+```css
+.primary {
+  background-color: #3b82f6; /* Было */
+  font-family: var(--font-main); /* Теперь Storybook знает эту переменную */
+}
+```
+
+Благодаря импорту в `preview.ts`, Storybook будет применять эти глобальные правила ко всем компонентам во всех историях.

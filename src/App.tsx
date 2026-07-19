@@ -3,7 +3,7 @@ import { Button } from "@/components"
 export const App = () => {
   return (
     <div>
-      <Button />
+      <Button label="Главная кнопка" />
     </div>
   )
 }

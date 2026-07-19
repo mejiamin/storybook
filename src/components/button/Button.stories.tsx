@@ -4,6 +4,20 @@ import { Button } from './Button'
 const meta: Meta<typeof Button> = {
   title: 'UI/Button',
   component: Button,
+  tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: 'radio',
+      options: ['primary', 'secondary'],
+    },
+    size: {
+      control: 'select',
+      options: ['small', 'large']
+    },
+    label: {
+      control: 'text',
+    },
+  },
 }
 
 export default meta
@@ -14,5 +28,20 @@ export const Primary: Story = {
   args: {
     label: 'Главная кнопка',
     variant: 'primary',
+  }
+}
+
+export const Secondary: Story = {
+  args: {
+    label: 'Вторичная кнопка',
+    variant: 'secondary',
+  }
+}
+
+export const Large: Story = {
+  args: {
+    label: 'Большая кнопка',
+    variant: 'primary',
+    size: 'large',
   }
 }
