@@ -5,6 +5,18 @@ const meta: Meta<typeof Button> = {
   title: 'UI/Button',
   component: Button,
   tags: ['autodocs'],
+  decorators: [
+    (Story) => (
+      <div style={{
+        padding: '3em',
+        display: 'flex',
+        justifyContent: 'center',
+        border: '2px dashed #ccc'
+      }}>
+        <Story />
+      </div>
+    )
+  ],
   argTypes: {
     variant: {
       control: 'radio',
