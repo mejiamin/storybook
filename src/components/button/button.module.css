@@ -13,6 +13,7 @@
 
 .primary {
   background-color: #3b82f6;
+  font-family: var(--font-main);
   color: white;
 }
 
